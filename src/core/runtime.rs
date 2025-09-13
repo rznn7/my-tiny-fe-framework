@@ -1,12 +1,12 @@
 use leptos_reactive::{create_runtime, create_scope};
 use web_sys::window;
 
-use crate::core::component::{Component, ComponentContext};
+use crate::core::{component::Component, dependency_injection::ComponentScope};
 
 pub fn start_app<T: Component + 'static>(root_component: T) {
     let runtime = create_runtime();
     let _scope = create_scope(runtime, |scope| {
-        let root_context = ComponentContext::new(scope);
+        let root_context = ComponentScope::new(scope);
 
         root_context.with(|| {
             let window = window().unwrap();

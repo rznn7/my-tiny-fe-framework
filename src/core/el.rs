@@ -3,9 +3,9 @@ use std::ops::Deref;
 use leptos_reactive::create_effect;
 use web_sys::{Element, Event, window};
 
-use crate::core::component::ComponentContext;
-
 use wasm_bindgen::JsCast;
+
+use crate::core::dependency_injection::ComponentScope;
 
 #[derive(Debug, Clone)]
 pub struct El(Element);
@@ -47,7 +47,8 @@ impl El {
     }
 
     pub fn dyn_text(self, f: impl Fn() -> String + 'static) -> Self {
-        let scope = ComponentContext::scope().expect("dyn_text called outside component context");
+        let scope =
+            ComponentScope::reactive_scope().expect("dyn_text called outside component context");
         let window = window().unwrap();
         let document = window.document().unwrap();
         let node = document.create_text_node("");
@@ -62,9 +63,8 @@ impl El {
     }
 
     pub fn dyn_child(self, f: impl Fn() -> Option<El> + 'static) -> Self {
-        let current_ctx =
-            ComponentContext::current().expect("dyn_child called outside component context");
-        let scope = current_ctx.scope;
+        let current_scope = ComponentScope::current_scope().unwrap();
+        let scope = current_scope.scope();
         let window = window().unwrap();
         let document = window.document().unwrap();
 
@@ -76,7 +76,7 @@ impl El {
 
         self.0.append_child(&container).unwrap();
 
-        let child_ctx = current_ctx.create_child();
+        let child_ctx = current_scope.create_child();
 
         create_effect(scope, move |_| {
             child_ctx.with(|| {
