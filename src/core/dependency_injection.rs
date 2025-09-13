@@ -71,3 +71,26 @@ impl ComponentScope {
         }
     }
 }
+
+#[macro_export]
+macro_rules! provide {
+    ($service_expr:expr) => {
+        $crate::core::dependency_injection::ComponentScope::provide($service_expr)
+    };
+    ($service_type:ty) => {
+        $crate::core::dependency_injection::ComponentScope::provide(<$service_type>::default())
+    };
+}
+
+#[macro_export]
+macro_rules! inject {
+    ($service_type:ty) => {
+        $crate::core::dependency_injection::ComponentScope::inject::<$service_type>().expect(
+            concat!(
+                "Service ",
+                stringify!($service_type),
+                " not found in current scope"
+            ),
+        )
+    };
+}

@@ -1,6 +1,9 @@
 use leptos_reactive::{ReadSignal, SignalGet, SignalUpdate, WriteSignal, create_signal};
 
-use crate::core::{component::Component, dependency_injection::ComponentScope, el::El};
+use crate::{
+    core::{component::Component, dependency_injection::ComponentScope, el::El},
+    inject, provide,
+};
 
 // ============= Components =============
 
@@ -36,8 +39,8 @@ pub struct RootCounterProvider {
 }
 impl Component for RootCounterProvider {
     fn render(&self) -> El {
-        ComponentScope::provide(CounterService::new());
-        let counter_service = ComponentScope::inject::<CounterService>().unwrap();
+        provide!(CounterService::new());
+        let counter_service = inject!(CounterService);
         let counter_increment = counter_service.clone();
         let counter_display = counter_service.clone();
 
@@ -83,7 +86,7 @@ struct MiddleCounterConsumer {
 }
 impl Component for MiddleCounterConsumer {
     fn render(&self) -> El {
-        let counter_service = ComponentScope::inject::<CounterService>().unwrap();
+        let counter_service = inject!(CounterService);
         let counter_decrement = counter_service.clone();
 
         El::new("div")
@@ -120,8 +123,8 @@ pub struct NestedCounterProvider {
 }
 impl Component for NestedCounterProvider {
     fn render(&self) -> El {
-        ComponentScope::provide(CounterService::new());
-        let counter_service = ComponentScope::inject::<CounterService>().unwrap();
+        provide!(CounterService::new());
+        let counter_service = inject!(CounterService);
         let counter_increment = counter_service.clone();
         let counter_display = counter_service.clone();
 
